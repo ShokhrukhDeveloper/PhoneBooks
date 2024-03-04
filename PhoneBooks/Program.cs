@@ -1,7 +1,5 @@
 ﻿using PhoneBooks.Models;
 using PhoneBooks.Services;
-using System;
-
 class Program
 {
     public static List<Option> options;
@@ -16,10 +14,7 @@ class Program
                 WriteOptionMenu(contact);
             }
         } while (true);
-       
-
     }
-
     static void WriteOptionMenu(Contact contact)
     {
         int index = 0;
@@ -100,7 +95,6 @@ class Program
 
                 Console.WriteLine(contact.Name);
             }
-            
             Console.WriteLine("<Create new contact>");
             keyinfo = Console.ReadKey();
 
