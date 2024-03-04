@@ -1,4 +1,6 @@
-﻿namespace PhoneBooks.Brokers.FileBroker
+﻿using PhoneBooks.Models;
+
+namespace PhoneBooks.Brokers.FileBroker
 {
     public interface IFileBroker
     {
