@@ -8,8 +8,6 @@ class Program
         bool running = true;
         do
         {
-
-            Console.Clear();
             _service.ShowAllContact();
             Console.WriteLine("Phone Contact CRUD Menu");
             Console.WriteLine("1. Add Contact");

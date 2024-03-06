@@ -2,10 +2,10 @@
 
 namespace PhoneBooks.Brokers.FileBroker
 {
-    public class StorageBroker : IStorageBroker
+    public class FileBroker : IStorageBroker
     {
         private readonly string filePath = "../../../Assets/Contacts.txt";
-        public StorageBroker()
+        public FileBroker()
         {
             EnsureFileExists();
         }
