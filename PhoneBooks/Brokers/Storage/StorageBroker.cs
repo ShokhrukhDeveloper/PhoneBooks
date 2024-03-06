@@ -12,7 +12,6 @@ namespace PhoneBooks.Brokers.FileBroker
         public Contact DeleteContactByLine(int line)
         {
             string[] contactLines = File.ReadAllLines(filePath);
-            contactLines[line] = contactLines[line+1];
             string contactLine = contactLines[line];
             string[] contactProperties = contactLine.Split('*');
             Contact contact = new Contact
@@ -21,6 +20,9 @@ namespace PhoneBooks.Brokers.FileBroker
                 Name = contactProperties[1],
                 Phone = contactProperties[2]
             };
+            var list= contactLines.ToList();
+            list.RemoveAt(line);
+            contactLines = list.ToArray();
             File.WriteAllLines(filePath, contactLines);
             return contact;
         }
@@ -75,7 +77,7 @@ namespace PhoneBooks.Brokers.FileBroker
         public Contact UpdateContactByLine(int line, Contact contact)
         {
             string[] allLines = File.ReadAllLines(filePath);
-            string contactLine = $"{contact.Id}*{contact.Name}*{contact.Phone}\n"; ;
+            string contactLine = $"{contact.Id}*{contact.Name}*{contact.Phone}"; ;
             allLines[line] = contactLine;
             File.WriteAllLines(filePath, allLines);
             return contact;

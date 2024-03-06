@@ -28,10 +28,11 @@ namespace PhoneBooks.Services
             try
             {
                 Contact[] contacts = this.storageBroker.GetAllContacts();
-
+                int i = 0;
                 foreach (Contact contact in contacts)
                 {
-                    this.loggingBroker.LogInformation($"{contact.Id}. {contact.Name} - {contact.Phone}");
+                    i++;
+                    this.loggingBroker.LogInformation($"{i}. {contact.Name} - {contact.Phone}");
                 }
 
                 this.loggingBroker.LogInformation("===End of contacts===");
