@@ -5,7 +5,7 @@ namespace PhoneBooks.Services
 {
     public interface IContactService
     {
-        Contact[] GetAllContact();
+        void ShowAllContact();
         Contact GetContactById(int id);
         Contact InsertContact(Contact contact);
         void DeleteContactById(int id);

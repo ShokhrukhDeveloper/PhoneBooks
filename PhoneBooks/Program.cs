@@ -2,125 +2,79 @@
 using PhoneBooks.Services;
 class Program
 {
-    public static List<Option> options;
     private static IContactService _service = new ContactService();
     static void Main(string[] args)
     {
+        bool running = true;
         do
         {
-        Contact? contact= WriteContactMenu();
-            if (contact is not null)
-            {
-                WriteOptionMenu(contact);
-            }
-        } while (true);
-    }
-    static void WriteOptionMenu(Contact contact)
-    {
-        int index = 0;
 
-       ConsoleKeyInfo keyinfo;
-
-        options = new List<Option>
-          {
-                new Option("Delete contact"),
-                new Option("Update contact"),
-                new Option("Back")
-          };
-        bool running = true;   
-        do
-        {
             Console.Clear();
-            Console.WriteLine($"Id: {contact.Id} \nName: {contact.Name} \nPhone: {contact.PhoneNumber}");
-            foreach (var option in options)
-            {
-                if (option == options[index])
-                {
-                    Console.Write("> ");
-                }
-                else
-                {
-                    Console.Write("  ");
-                }
-                Console.WriteLine(option.Name);
+            _service.ShowAllContact();
+            Console.WriteLine("Phone Contact CRUD Menu");
+            Console.WriteLine("1. Add Contact");
+            Console.WriteLine("2. View Contacts");
+            Console.WriteLine("3. Update Contact");
+            Console.WriteLine("4. Delete Contact");
+            Console.WriteLine("5. Exit");
+            Console.Write("Enter your choice: ");
 
-            }
-            keyinfo = Console.ReadKey();
-            if (keyinfo.Key == ConsoleKey.DownArrow)
-            {
-                index++;
-            }
-            if (keyinfo.Key == ConsoleKey.UpArrow)
-            {
-                index--;
-            }
-            if (keyinfo.Key==ConsoleKey.Enter && index==2)
-            {
-                running = false;
-            }
-            else if (keyinfo.Key == ConsoleKey.Enter && index == 1)
-            {
-                Console.WriteLine("Succesfully deleted");
-                Thread.Sleep(2000);
-                running = false;
-            }
-            else if (keyinfo.Key == ConsoleKey.Enter && index == 0)
-            {
-                Console.WriteLine("Succesfully updated");
-                Thread.Sleep(2000);
-                running = false;
-            }
+            string choice = Console.ReadLine();
 
+
+            switch (choice)
+            {
+                case "1":
+                    AddContact();
+                    break;
+                case "2":
+                    ViewContacts();
+                    break;
+                case "3":
+                    Console.Write("Enter Id: ");
+                    int Id = Convert.ToInt32(Console.ReadLine());
+                    UpdateContact(Id);
+                    break;
+                case "4":
+                    Console.WriteLine("Enter Id: ");
+                    Id = Convert.ToInt32(Console.ReadLine());
+                    DeleteContact(Id);
+                    break;
+                case "5":
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.WriteLine("Invalid choice. Please try again.");
+                    break;
+            }
         } while (running);
-
     }
-    static Contact? WriteContactMenu()
+
+    private static void DeleteContact(int Id)
     {
-        int index = 0;
-        ConsoleKeyInfo keyinfo;
-        Contact[] contacts = _service.GetAllContact();
-        
-        do{
-            Console.Clear();
-            foreach (Contact contact in contacts)
-            {
-                if (contact == contacts[index])
-                {
-                    Console.Write("> ");
-                }
-                else
-                {
-                    Console.Write(" ");
-                }
-
-                Console.WriteLine(contact.Name);
-            }
-            Console.WriteLine("<Create new contact>");
-            keyinfo = Console.ReadKey();
-
-            if (keyinfo.Key==ConsoleKey.DownArrow)
-            {
-                index++;
-            }
-            else if (keyinfo.Key == ConsoleKey.UpArrow)
-            {
-                index--;
-            }
-            else if (keyinfo.Key==ConsoleKey.Enter)
-            {
-                return contacts[index];
-            }
-
-        } while (true);
+        _service.DeleteContactById(Id);
     }
-}
 
-public class Option
-{
-    public string Name { get; }
-
-    public Option(string name)
+    private static void UpdateContact(int Id)
     {
-        Name = name;
+        Console.WriteLine("Name: ");
+        string name = Console.ReadLine();
+        Console.WriteLine("Phone: ");
+        string phone = Console.ReadLine();
+        _service.UpdateContactById(Id, new Contact {Id=Id, Name=name, Phone=phone });
+    }
+
+    private static void ViewContacts()
+    {
+        _service.ShowAllContact();
+    }
+
+    private static void AddContact()
+    {
+        Console.WriteLine("Name: ");
+        string name = Console.ReadLine();
+        Console.WriteLine("Phone: ");
+        string phone = Console.ReadLine();
+        _service.InsertContact(new Contact { Id = new Random().Next(100), Name = name, Phone = phone });
     }
 }

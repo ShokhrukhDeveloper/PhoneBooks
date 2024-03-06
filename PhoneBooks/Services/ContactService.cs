@@ -1,46 +1,131 @@
-﻿using PhoneBooks.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PhoneBooks.Brokers.FileBroker;
+using PhoneBooks.Brokers.Logging;
+using PhoneBooks.Models;
 
 namespace PhoneBooks.Services
 {
     internal class ContactService : IContactService
     {
-       static Contact[] contacts = { 
-            new Contact() { Id = 1, Name = "New qwer", PhoneNumber = "+998997531097" },
-            new Contact() { Id = 2, Name = "New jhas", PhoneNumber = "+998997531099" },
-            new Contact() { Id = 3, Name = "New ewrgt", PhoneNumber = "+998997531002" },
-            new Contact() { Id = 4, Name = "New asdf", PhoneNumber = "+998997531087" },
-            new Contact() { Id = 5, Name = "New hgj", PhoneNumber = "+998997538090" },
-        };
+        private readonly ILoggingBroker loggingBroker = new LoggingBroker();
+        private readonly IStorageBroker storageBroker = new StorageBroker();
         public void DeleteContactById(int id)
         {
+            try
+            {
+                this.storageBroker.DeleteContactByLine(id);
+                loggingBroker.LogInformation("Contact successfully deleted");
+            }
+            catch (Exception exception)
+            {
+                loggingBroker.LogError($"Error occured at {nameof(DeleteContactById)}  please contract developer");
+                loggingBroker.LogError(exception);
+            }
+           
+        }
+
+        public void ShowAllContact()
+        {
+            try
+            {
+                Contact[] contacts = this.storageBroker.GetAllContacts();
+                int i = 0;
+                foreach (Contact contact in contacts)
+                {
+                    i++;
+                    this.loggingBroker.LogInformation($"{i}. {contact.Name} - {contact.Phone}");
+                }
+
+                this.loggingBroker.LogInformation("===End of contacts===");
+
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError(exception);
+            }
             
         }
 
-        public Contact[] GetAllContact()
+        public Contact GetContactById(int line)
         {
-            return contacts;
-        }
-
-        public Contact GetContactById(int id)
-        {
-            return contacts[id];
+            try
+            {
+            return storageBroker.GetContactByLine(line);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError($"Error occured getting at {nameof(GetContactById)} please contract developer");
+                this.loggingBroker.LogError(exception);
+                return new Contact();
+            }
+           
         }
 
         public Contact InsertContact(Contact contact)
         {
-            contacts.Append(contact);
-            return contact;
+            try
+            {
+                return contact is null
+                ? CreateAndLogInvalidContact()
+                : ValidateAndAddContact(contact);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError($"Error occured at creating contact {nameof(InsertContact)} please contract developer");
+                this.loggingBroker.LogError(exception);
+                return new Contact(); 
+            }
+            
         }
 
         public Contact UpdateContactById(int id, Contact contact)
         {
-            contacts[id] = contact;
-            return contact;
+            try
+            {
+                return ValidateAndUpdateContact(id, contact);
+            }
+            catch (Exception exception)
+            {
+                this.loggingBroker.LogError($"Error occured at updating contact {nameof(InsertContact)} please contract developer");
+                this.loggingBroker.LogError(exception);
+                return new Contact();
+            }
+            
+        }
+        
+        private Contact CreateAndLogInvalidContact()
+        {
+            this.loggingBroker.LogError("Contact is invalid.");
+            return new Contact();
+        }
+        
+        private Contact ValidateAndAddContact(Contact contact)
+        {
+            if (contact.Id is 0
+                || String.IsNullOrWhiteSpace(contact.Name)
+                || String.IsNullOrWhiteSpace(contact.Phone))
+            {
+                this.loggingBroker.LogError("Contact details missing.");
+                return new Contact();
+            }
+            else
+            {
+                return this.storageBroker.InsertContact(contact);
+            }
+        }
+        
+        private Contact ValidateAndUpdateContact(int Id,Contact contact)
+        {
+            if (Id is 0
+                || String.IsNullOrWhiteSpace(contact.Name)
+                || String.IsNullOrWhiteSpace(contact.Phone))
+            {
+                this.loggingBroker.LogError("Contact details missing.");
+                return new Contact();
+            }
+            else
+            {
+                return this.storageBroker.UpdateContactByLine(Id,contact);
+            }
         }
     }
 }

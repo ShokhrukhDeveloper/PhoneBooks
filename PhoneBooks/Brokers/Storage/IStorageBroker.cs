@@ -2,7 +2,7 @@
 
 namespace PhoneBooks.Brokers.FileBroker
 {
-    public interface IFileBroker
+    public interface IStorageBroker
     {
         Contact InsertContact(Contact contact);
         Contact[] GetAllContacts();
